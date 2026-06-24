@@ -1,340 +1,474 @@
-<!doctype html>
-<html lang="pt-BR" class="h-full">
+<!DOCTYPE html>
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DOXA Agência</title>
-  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Montserrat:wght@500;600;700&family=Lato:wght@300;400&display=swap" rel="stylesheet">
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            bg:      '#0a0a0a',
-            bgAlt:   '#101010',
-            lime:    '#cee175',
-            purple:  '#443ba8',
-            txt:     '#efefef',
-            txtSub:  '#8a8a8a',
-            txtBody: '#7a7a7a',
-            txtMute: '#555555',
-            border:  '#222222',
-          },
-          fontFamily: {
-            display: ['"Playfair Display"', 'serif'],
-            label:   ['Montserrat', 'sans-serif'],
-            body:    ['Lato', 'sans-serif'],
-          },
-        }
-      }
-    };
-  </script>
-  <style>
-    @keyframes grain {
-      0%, 100% { transform: translate(0, 0); }
-      10%  { transform: translate(-2%, -3%); }
-      30%  { transform: translate(3%, 2%); }
-      50%  { transform: translate(-1%, 4%); }
-      70%  { transform: translate(4%, -2%); }
-      90%  { transform: translate(-3%, 1%); }
-    }
-    .noise::before {
-      content: '';
-      position: absolute;
-      inset: -50%;
-      width: 200%; height: 200%;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-      opacity: 0.03;
-      animation: grain 8s steps(10) infinite;
-      pointer-events: none;
-      z-index: 1;
-    }
-    .dot-grid {
-      background-image: radial-gradient(circle, #cee17514 1px, transparent 1px);
-      background-size: 28px 28px;
-    }
-    .cross-hatch {
-      background-image:
-        repeating-linear-gradient(45deg, transparent, transparent 14px, #ffffff05 14px, #ffffff05 15px),
-        repeating-linear-gradient(-45deg, transparent, transparent 14px, #ffffff04 14px, #ffffff04 15px);
-    }
-    .line-texture {
-      background-image: repeating-linear-gradient(0deg, transparent, transparent 18px, #ffffff04 18px, #ffffff04 19px);
-    }
-    .fade-in {
-      opacity: 0;
-      transform: translateY(28px);
-      transition: opacity 0.8s cubic-bezier(.22,1,.36,1), transform 0.8s cubic-bezier(.22,1,.36,1);
-    }
-    .fade-in.visible { opacity: 1; transform: translateY(0); }
-    .stagger-1 { transition-delay: 0.08s; }
-    .stagger-2 { transition-delay: 0.18s; }
-    .stagger-3 { transition-delay: 0.30s; }
-    .stagger-4 { transition-delay: 0.44s; }
-    .viewport-section {
-      min-height: 100svh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      padding-top: 110px;
-      padding-bottom: 90px;
-      position: relative;
-      overflow: hidden;
-    }
-    .navbar-blur {
-      background: rgba(10,10,10,0.88);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-    }
-    .section-label {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      font-family: Montserrat, sans-serif;
-      font-size: 0.7rem;
-      font-weight: 700;
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
-      color: #cee175;
-      margin-bottom: 1.5rem;
-    }
-    .section-label::before,
-    .section-label::after {
-      content: '';
-      display: block;
-      width: 24px;
-      height: 1px;
-      background: #cee17580;
-    }
-    .lime-card { transition: border-color 0.3s, box-shadow 0.3s; }
-    .lime-card:hover { border-color: #cee17540 !important; box-shadow: 0 0 40px #cee17508; }
-    .plan-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
-    .plan-card:hover { transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
-    .tally-wrapper iframe { border: none; display: block; }
-    .divider { width: 100%; height: 1px; background: linear-gradient(90deg, transparent, #2a2a2a 20%, #2a2a2a 80%, transparent); }
-  </style>
-</head>
-<body class="bg-bg text-txt font-body overflow-x-hidden">
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-NT0VGXYV63"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-NT0VGXYV63');
+</script>
 
-  <!-- NAVBAR -->
-  <nav class="navbar-blur fixed top-0 left-0 right-0 z-50 border-b border-border h-[68px] flex items-center px-6 md:px-12">
-    <div class="max-w-6xl mx-auto w-full flex items-center justify-between">
-      <span class="font-display font-black text-lime text-xl tracking-[5px]">DOXA</span>
-      <div class="hidden md:flex items-center gap-8">
-        <a href="#processo" class="font-label text-[11px] text-txtSub tracking-[2px] hover:text-lime transition-colors uppercase">Como funciona</a>
-        <a href="#uvp"      class="font-label text-[11px] text-txtSub tracking-[2px] hover:text-lime transition-colors uppercase">Por que a Doxa</a>
-        <a href="#contato"  class="font-label text-[11px] text-txtSub tracking-[2px] hover:text-lime transition-colors uppercase">Contato</a>
-        <a href="#contato"
-           class="font-label text-[11px] font-bold tracking-[2px] px-5 py-2.5 uppercase transition-all duration-200"
-           style="border-radius:2px; border:1.5px solid #cee175; color:#cee175; background:transparent;"
-           onmouseover="this.style.background='#cee175'; this.style.color='#0a0a0a';"
-           onmouseout="this.style.background='transparent'; this.style.color='#cee175';">
-          Quero saber mais
-        </a>
-      </div>
-    </div>
-  </nav>
-
-  <!-- HERO -->
-  <section class="relative bg-bg viewport-section px-6 md:px-12 noise">
-    <div class="absolute inset-0 pointer-events-none" style="background: radial-gradient(ellipse 70% 50% at 50% 60%, #cee17508 0%, transparent 70%);"></div>
-    <div class="max-w-4xl mx-auto w-full text-center relative z-10">
-      <div class="fade-in section-label">Google Ads · Meta Ads · Geração de Leads · BH</div>
-      <h1 class="fade-in stagger-1 font-display font-black leading-[1.04] mb-10"
-          style="font-size: clamp(2.6rem, 7vw, 5.5rem);">
-        Não dependa de indicações para<br>
-        <em style="font-style:italic; color:#cee175;">fechar um negócio.</em>
-      </h1>
-      <p class="fade-in stagger-2 font-body font-light text-txtSub leading-[1.75] max-w-xl mx-auto mb-14"
-         style="font-size: clamp(1rem, 2vw, 1.2rem);">
-        A Doxa estrutura e gerencia os seus anúncios em Google Ads e Meta Ads para que o seu negócio receba contatos de pessoas que já querem o que você vende. Isso irá acontecer todo mês, de forma previsível.
-      </p>
-      <div class="fade-in stagger-3 flex flex-col sm:flex-row items-center justify-center gap-4">
-        <a href="#contato"
-           class="inline-block font-label font-bold text-[12px] tracking-[3px] uppercase px-10 py-4 transition-all duration-200"
-           style="border-radius:2px; background:#cee175; color:#0a0a0a;"
-           onmouseover="this.style.background='#ddf080';"
-           onmouseout="this.style.background='#cee175';">
-          Quero saber mais!
-        </a>
-        <a href="#processo" class="inline-block font-label text-[11px] tracking-[2px] uppercase px-8 py-4 text-txtSub hover:text-lime transition-colors">
-          Ver como funciona →
-        </a>
-      </div>
-    </div>
-    <div class="absolute bottom-0 left-0 right-0 h-24 pointer-events-none" style="background: linear-gradient(to bottom, transparent, #0a0a0a);"></div>
-  </section>
-
-  <!-- UVP -->
-  <section id="uvp" class="relative bg-bgAlt dot-grid viewport-section px-6 md:px-12">
-    <div class="absolute inset-0 pointer-events-none" style="background: radial-gradient(ellipse 60% 60% at 50% 50%, #101010ee 30%, transparent 100%);"></div>
-    <div class="max-w-4xl mx-auto w-full text-center relative z-10">
-      <div class="fade-in section-label">Por que a Doxa</div>
-      <h2 class="fade-in stagger-1 font-display font-bold leading-[1.08] mb-12"
-          style="font-size: clamp(2rem, 5vw, 3.8rem);">
-        A maioria das agências entrega cliques.<br>
-        A Doxa entrega <span style="color:#cee175; font-style:italic;">contatos que querem comprar.</span>
-      </h2>
-      <div class="fade-in stagger-2 max-w-3xl mx-auto mb-14">
-        <div class="lime-card border border-border p-8 text-left" style="border-radius:2px; background:#0d0d0d;">
-          <p class="font-body text-txtBody leading-[1.85] text-[15px] mb-5">
-            Anunciar tanto no Google Ads quanto Meta Ads pode parecer simples, mas a maioria das empresas que tentou, gastou dinheiro, não viu resultado e desistiu achando que "anúncios não funcionam para o meu negócio".
-          </p>
-          <p class="font-body text-txtBody leading-[1.85] text-[15px] mb-5">
-            O problema quase nunca é a plataforma. É a falta de estrutura.
-          </p>
-          <p class="font-body text-txtBody leading-[1.85] text-[15px] mb-5">
-            Sem saber quem é o cliente certo, sem um anúncio que fala com ele de verdade e sem acompanhamento real das campanhas, o dinheiro vai embora sem deixar rastro.
-          </p>
-          <p class="font-body text-txtBody leading-[1.85] text-[15px]">
-            A Doxa resolve exatamente isso. Entendemos o seu negócio, montamos a estrutura certa e cuidamos das campanhas mês a mês. <span class="text-txt">Você foca em atender. Nós cuidamos de trazer os contatos.</span>
-          </p>
-        </div>
-      </div>
-      <a href="#processo"
-         class="fade-in stagger-3 inline-block font-label font-bold text-[11px] tracking-[2.5px] uppercase px-8 py-4 transition-all duration-200"
-         style="border-radius:2px; border:1.5px solid #cee175; color:#cee175; background:transparent;"
-         onmouseover="this.style.background='#cee175'; this.style.color='#0a0a0a';"
-         onmouseout="this.style.background='transparent'; this.style.color='#cee175';">
-        Entenda como a Doxa trabalha!
-      </a>
-    </div>
-  </section>
-
-  <!-- PROCESSO -->
-  <section id="processo" class="relative bg-bg cross-hatch viewport-section px-6 md:px-12">
-    <div class="absolute inset-0 pointer-events-none" style="background: linear-gradient(180deg, #0a0a0aee 0%, #0a0a0a99 50%, #0a0a0aee 100%);"></div>
-    <div class="max-w-5xl mx-auto w-full text-center relative z-10">
-      <div class="fade-in section-label">Como funciona</div>
-      <h2 class="fade-in stagger-1 font-display font-bold leading-[1.08] mb-6"
-          style="font-size: clamp(2rem, 5vw, 3.4rem);">
-        Do primeiro contato ao primeiro lead,<br>
-        Veja o que acontece na prática:
-      </h2>
-      <p class="fade-in stagger-2 font-body text-txtMute text-[14px] leading-[1.75] max-w-xl mx-auto mb-16">Cada cliente passa por um processo pensado do começo ao fim.</p>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-px w-full" style="background:#1e1e1e;">
-        <div class="fade-in stagger-1 lime-card relative bg-bg p-10 flex flex-col items-start text-left">
-          <div style="font-family:'Playfair Display',serif; font-size:5rem; font-weight:900; color:#161616; line-height:1; margin-bottom:.5rem; user-select:none;">01</div>
-          <h3 class="font-label font-bold text-[11px] tracking-[2px] text-lime uppercase mb-4">Entendemos o seu negócio de verdade</h3>
-          <p class="font-body text-[14px] text-txtBody leading-[1.75]">Antes de criar qualquer anúncio, nos reunimos com você para entender quem é o seu cliente ideal, o que o faz tomar a decisão de compra e o que diferencia a sua empresa da concorrência. Essa etapa existe porque anúncio bom não é bonito. É certeiro. E para ser certeiro, precisa falar com a pessoa certa, do jeito certo.</p>
-        </div>
-        <div class="fade-in stagger-2 lime-card relative bg-bg p-10 flex flex-col items-start text-left">
-          <div style="font-family:'Playfair Display',serif; font-size:5rem; font-weight:900; color:#161616; line-height:1; margin-bottom:.5rem; user-select:none;">02</div>
-          <h3 class="font-label font-bold text-[11px] tracking-[2px] text-lime uppercase mb-4">Criamos anúncios estáticos estratégicos</h3>
-          <p class="font-body text-[14px] text-txtBody leading-[1.75]">Com base no que aprendemos sobre o seu negócio, desenvolvemos anúncios estáticos que conversam diretamente com seu cliente ideal. Configuramos as campanhas no Google Ads e Meta Ads com um funil pensado para o seu segmento: topo, meio e fundo. Cada anúncio é construído especificamente para a sua empresa, não é template.</p>
-        </div>
-        <div class="fade-in stagger-3 lime-card relative bg-bg p-10 flex flex-col items-start text-left">
-          <div style="font-family:'Playfair Display',serif; font-size:5rem; font-weight:900; color:#161616; line-height:1; margin-bottom:.5rem; user-select:none;">03</div>
-          <h3 class="font-label font-bold text-[11px] tracking-[2px] text-lime uppercase mb-4">Gerenciamos, otimizamos e reportamos</h3>
-          <p class="font-body text-[14px] text-txtBody leading-[1.75]">Campanhas não se gerenciam sozinhas. Acompanhamos os resultados de perto, ajustamos o que não está performando e testamos novas abordagens continuamente. Todo mês você recebe um relatório claro, não só números, mas o que eles significam para o seu negócio.</p>
-        </div>
-      </div>
-      <div class="mt-12">
-        <a href="#contato"
-           class="fade-in inline-block font-label font-bold text-[11px] tracking-[2.5px] uppercase px-8 py-4 transition-all duration-200"
-           style="border-radius:2px; border:1.5px solid #cee175; color:#cee175; background:transparent;"
-           onmouseover="this.style.background='#cee175'; this.style.color='#0a0a0a';"
-           onmouseout="this.style.background='transparent'; this.style.color='#cee175';">
-          Quero começar agora
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- PLANOS -->
-  <section id="planos" class="relative bg-bgAlt line-texture viewport-section px-6 md:px-12">
-    <div class="absolute inset-0 pointer-events-none" style="background: radial-gradient(ellipse 80% 60% at 50% 50%, #101010f0 0%, transparent 100%);"></div>
-    <div class="max-w-3xl mx-auto w-full text-center relative z-10">
-      <div class="fade-in section-label">Investimento</div>
-      <h2 class="fade-in stagger-1 font-display font-bold leading-[1.08] mb-6" style="font-size: clamp(2rem, 5vw, 3.4rem);">
-        Planos a partir de<br><span style="color:#cee175;">R$ 850 por mês.</span>
-      </h2>
-      <div class="fade-in stagger-2 lime-card border border-border p-10 text-left mb-10" style="border-radius:2px; background:#0d0d0d;">
-        <p class="font-body text-txtBody leading-[1.85] text-[15px] mb-5">
-          O valor do serviço começa em R$ 850/mês, variando conforme o escopo e os objetivos do seu negócio.
-        </p>
-        <p class="font-body text-txtBody leading-[1.85] text-[15px]">
-          O valor do investimento em anúncios é pago diretamente ao Google Ads e Meta Ads. Cada centavo gasto é definido em conjunto com você. Entre em contato para entender qual estrutura faz mais sentido para o seu momento.
-        </p>
-      </div>
-      <a href="#contato"
-         class="fade-in stagger-3 inline-block font-label font-bold text-[11px] tracking-[2.5px] uppercase px-8 py-4 transition-all duration-200"
-         style="border-radius:2px; border:1.5px solid #cee175; color:#cee175; background:transparent;"
-         onmouseover="this.style.background='#cee175'; this.style.color='#0a0a0a';"
-         onmouseout="this.style.background='transparent'; this.style.color='#cee175';">
-        Quero saber mais
-      </a>
-    </div>
-  </section>
-
-  <!-- CTA + FORM -->
-  <section id="contato" class="relative bg-bg noise viewport-section px-6 md:px-12">
-    <div class="absolute inset-0 pointer-events-none" style="background: radial-gradient(ellipse 60% 60% at 50% 40%, #cee17506 0%, transparent 70%);"></div>
-    <div class="max-w-2xl mx-auto w-full text-center relative z-10">
-      <div class="fade-in section-label">Próximo passo</div>
-      <h2 class="fade-in stagger-1 font-display font-bold leading-[1.08] mb-5"
-          style="font-size: clamp(1.8rem, 4.5vw, 3rem);">
-        Pronto para ter um fluxo previsível de contatos?
-      </h2>
-      <p class="fade-in stagger-2 font-body text-txtBody text-[15px] leading-[1.75] max-w-md mx-auto mb-12">
-        Preencha o formulário abaixo. Vamos entender o seu negócio e ver se faz sentido trabalharmos juntos.
-      </p>
-      <div class="fade-in stagger-3 w-full" style="max-width:600px; margin:0 auto;">
-        <iframe data-tally-src="https://tally.so/embed/QKJbvX?alignLeft=1&hideTitle=1&dynamicHeight=1"
-                loading="lazy"
-                width="100%"
-                height="1870"
-                frameborder="0"
-                marginheight="0"
-                marginwidth="0"
-                title="Formulário de contato Doxa"
-                style="border:none; display:block;">
-        </iframe>
-      </div>
-    </div>
-  </section>
-
-  <!-- FOOTER -->
-  <footer class="relative bg-bg border-t px-6 md:px-12 py-14 flex flex-col items-center justify-center gap-5" style="border-color:#181818;">
-    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-16 h-px" style="background:#cee175;"></div>
-    <div class="font-display font-black text-lime tracking-[6px] text-xl">DOXA</div>
-    <div class="font-label text-[10px] tracking-[2px] text-txtMute uppercase">© 2026 Doxa Agência · Belo Horizonte, MG</div>
-    </footer>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-          e.preventDefault();
-          const el = document.querySelector(this.getAttribute('href'));
-          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+<!-- Rastrear clique no botão WhatsApp -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const whatsappBtns = document.querySelectorAll('[onclick*="openWhatsApp"]');
+    
+    whatsappBtns.forEach(btn => {
+      btn.addEventListener('click', function() {
+        gtag('event', 'lead', {
+          'event_category': 'engagement',
+          'event_label': 'whatsapp_click',
+          'value': 1
         });
+        console.log('Lead registrado no GA4!');
       });
     });
-  </script>
-  <script>
-    var d = document, w = "https://tally.so/widgets/embed.js",
-      v = function () {
-        "undefined" != typeof Tally
-          ? Tally.loadEmbeds()
-          : d.querySelectorAll("iframe[data-tally-src]:not([src])").forEach(function (e) { e.src = e.dataset.tallySrc; });
-      };
-    if ("undefined" != typeof Tally) v();
-    else if (d.querySelector('script[src="' + w + '"]') == null) {
-      var s = d.createElement("script");
-      s.src = w; s.onload = v; s.onerror = v; d.body.appendChild(s);
-    }
-  </script>
-  <script>
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-    }, { threshold: 0.08 });
-    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
-  </script>
+  });
+</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consultoria Especializada - Embracon</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Configuração de Cores da Embracon -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        embracon: {
+                            blue: '#000000',
+                            red: '#CE181E',
+                            light: '#F4F7F9'
+                        },
+                        whatsapp: {
+                            DEFAULT: '#25D366',
+                            hover: '#1EBE57'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
 
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        
+        .hero-bg {
+            background-image: linear-gradient(to right, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+        }
+
+        @keyframes scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .carousel-track {
+            display: flex;
+            width: max-content;
+            animation: scroll 40s linear infinite;
+        }
+        .carousel-track:hover {
+            animation-play-state: paused;
+        }
+        .print-img {
+            height: 400px;
+            width: auto;
+            border-radius: 16px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border: 4px solid white;
+            object-fit: contain;
+            background-color: #f3f4f6;
+            flex-shrink: 0;
+        }
+    </style>
+
+</head>
+<body class="bg-gray-50 text-gray-800 antialiased selection:bg-embracon-red selection:text-white overflow-x-hidden">
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TBXWCTPS"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+    <!-- Configuração do Link do WhatsApp -->
+    <script>
+        const whatsappNumber = "553194709092";
+        const whatsappMessage = encodeURIComponent("Olá, Thayane! Vi as informações sobre a consultoria de consórcio da Embracon e gostaria de entender melhor como funciona e conhecer as opções disponíveis para o meu perfil. Poderia me ajudar com uma simulação personalizada?");
+        const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
+
+function openWhatsApp(event) {
+            if (event) {
+                event.preventDefault();
+            }
+            window.open(whatsappUrl, '_blank');
+        }
+    </script>
+
+    <!-- Header / Navbar -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <img src="https://i.imgur.com/pEmawN0.png" alt="Embracon Logo" class="h-10">
+            <button onclick="openWhatsApp(event)" class="hidden md:flex items-center gap-2 text-embracon-blue font-semibold hover:text-embracon-red transition-colors">
+                <i data-lucide="message-circle" class="w-5 h-5"></i>
+                <span>Solicitar Consultoria</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- ===== HERO SECTION ===== -->
+    <section class="hero-bg text-white py-20 lg:py-32">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center gap-12">
+            <div class="md:w-3/5 space-y-6">
+                <div class="inline-block px-4 py-1 bg-embracon-red text-white text-sm font-bold tracking-wide rounded-full uppercase">
+                    Consultoria em Consórcio
+                </div>
+                <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight">
+                    Contemplação <span class="text-embracon-red">Antecipada</span>: Estratégia Para Chegar Antes
+                </h1>
+                <p class="text-lg md:text-xl text-gray-200 font-light max-w-2xl">
+                    Com a estrutura certa, você pode aumentar suas chances de contemplação, e tirar o seu sonho do papel com parcelas que cabem no seu orçamento!
+                </p>
+                
+                <div class="pt-4 flex flex-col sm:flex-row gap-4">
+                    <button onclick="openWhatsApp(event)" class="flex items-center justify-center gap-3 bg-whatsapp hover:bg-whatsapp-hover text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1">
+                        <i data-lucide="message-circle" class="w-6 h-6"></i>
+                        <span>Solicitar Simulação</span>
+                    </button>
+                </div>
+                <p class="text-sm text-gray-300 italic flex items-center gap-2">
+                    <i data-lucide="shield-check" class="w-4 h-4 text-embracon-red"></i> Consultoria personalizada para você!
+                </p>
+            </div>
+            
+            <!-- Trust Badge Element -->
+            <div class="md:w-2/5 hidden md:flex justify-end">
+                <div class="bg-white/10 backdrop-blur-md border border-white/20 p-8 rounded-2xl shadow-2xl max-w-sm">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-12 h-12 bg-embracon-red rounded-full flex items-center justify-center">
+                            <i data-lucide="trending-up" class="text-white w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-xl text-white">Estratégia Inteligente</h3>
+                            <p class="text-sm text-gray-300">Estrutura otimizada</p>
+                        </div>
+                    </div>
+                    <ul class="space-y-4 text-gray-200">
+                        <li class="flex items-start gap-3">
+                            <i data-lucide="check-circle-2" class="text-whatsapp w-5 h-5 shrink-0 mt-0.5"></i>
+                            <span>Aumente suas chances de contemplação antecipada (18–24 meses).</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i data-lucide="check-circle-2" class="text-whatsapp w-5 h-5 shrink-0 mt-0.5"></i>
+                            <span>Parcelas que respeitam sua capacidade financeira.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i data-lucide="check-circle-2" class="text-whatsapp w-5 h-5 shrink-0 mt-0.5"></i>
+                            <span>Economia potencial significativa versus financiamento com juros.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== SEÇÃO 2: QUEBRA DE OBJEÇÕES ===== -->
+    <section class="py-20 bg-white">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-embracon-blue mb-4">
+                    "Consórcio só funciona com sorte."
+                </h2>
+                <p class="text-embracon-red font-bold text-lg mb-3">
+                  Quem entende a mecânica consegue resultados muito melhores.
+                </p>
+                <p class="text-gray-600 text-lg">
+                    Não depende só de sorte. Existe uma camada de estratégia que aumenta significativamente suas chances de contemplação antecipada.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Card 1 -->
+                <div class="bg-embracon-light p-8 rounded-2xl border border-gray-100 hover:shadow-lg transition-shadow">
+                    <div class="w-14 h-14 bg-embracon-blue rounded-xl flex items-center justify-center mb-6">
+                        <i data-lucide="clock" class="text-white w-7 h-7"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-embracon-blue mb-3">
+                        "Consórcio leva 10 anos"
+                    </h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Sim, sem estratégia pode levar muito tempo. Com a estratégia certa, muitos clientes conseguem contemplação muito antes do fim do plano. O quanto antes depende do grupo, do momento e do planejamento dos lances. E estas instruções estão presentes ao longo consultoria personalizada Embracon.
+                    </p>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="bg-embracon-light p-8 rounded-2xl border border-gray-100 hover:shadow-lg transition-shadow">
+                    <div class="w-14 h-14 bg-embracon-red rounded-xl flex items-center justify-center mb-6">
+                        <i data-lucide="wallet" class="text-white w-7 h-7"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-embracon-blue mb-3">
+                        "Consórcio sai muito caro"
+                    </h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Consórcio não tem juros, apenas taxa de administração. Financiamento acumula juros que podem representar 40–60% do valor do bem. Em muitos cenários, a economia é significativa. Sua simulação mostrará o número exato.
+                    </p>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="bg-embracon-light p-8 rounded-2xl border border-gray-100 hover:shadow-lg transition-shadow">
+                    <div class="w-14 h-14 bg-embracon-blue rounded-xl flex items-center justify-center mb-6">
+                        <i data-lucide="zap" class="text-white w-7 h-7"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-embracon-blue mb-3">
+                        "Preciso do carro logo, não tenho tempo a perder"
+                    </h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Consórcio não é para quem precisa do carro amanhã, e nunca fingimos que é. É para quem quer planejar a aquisição com inteligência financeira. Quem entra com estratégia de lance e escolha de grupo certa tem conseguido contemplação bem antes do fim do plano. E quem entra sem pressa sai sem dívida de juros.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== SEÇÃO 3: AUTORIDADE (Foto + Info) ===== -->
+    <section class="py-20 bg-gray-50 border-t border-gray-200">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row items-center gap-12">
+                <!-- Foto da Consultora -->
+                <div class="md:w-1/2 relative">
+                    <div class="absolute inset-0 bg-embracon-blue transform translate-x-4 translate-y-4 rounded-2xl opacity-20"></div>
+                    <img src="https://i.imgur.com/3dvlXgQ.png" alt="Thayane Manuela - Consultora Especialista Embracon" class="relative z-10 rounded-2xl shadow-xl w-full object-cover h-[500px]">
+                    
+                    <div class="absolute bottom-6 left-6 right-6 z-20 bg-white/95 backdrop-blur-sm p-4 rounded-xl shadow-lg border border-white/50">
+                        <p class="font-bold text-embracon-blue text-lg">Thayane Manuela</p>
+                        <p class="text-sm text-gray-600">Consultora Especialista - Embracon</p>
+                        <p class="text-xs text-gray-500 mt-2">Especializada em estrutura de consórcios automotivos</p>
+                    </div>
+                </div>
+
+                <div class="md:w-1/2 space-y-6">
+                    <h2 class="text-3xl md:text-4xl font-bold text-embracon-blue">
+                        Consultoria com a <span class="text-embracon-red">Maior Administradora Independente</span> do Brasil
+                    </h2>
+                    <p class="text-gray-600 text-lg leading-relaxed">
+                        A Embracon é a maior administradora independente de consórcios do país, com mais de 35 anos de mercado. Somos uma das líderes absolutas do setor, ao lado de grandes bancos em ranking do Banco Central, com uma missão clara: ajudar brasileiros a conquistarem seus bens com planejamento inteligente e sem intermediários desnecessários.
+                    </p>
+                    <p class="text-gray-600 text-lg leading-relaxed">
+                        O diferencial real que você encontra aqui é o <strong class="text-embracon-blue">atendimento consultivo humanizado</strong>. Não há robôs ou scripts automáticos. Meu trabalho é entender sua renda, seu objetivo e desenhar a estrutura exata para sua realidade financeira, seja online ou presencialmente.
+                    </p>
+                    
+                    <ul class="space-y-4 pt-4">
+                        <li class="flex items-center gap-4 bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                            <i data-lucide="award" class="text-embracon-red w-8 h-8"></i>
+                            <div>
+                                <h4 class="font-bold text-gray-800">35+ Anos de Mercado</h4>
+                                <p class="text-sm text-gray-500">Solidez institucional e confiança comprovadas.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-center gap-4 bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                            <i data-lucide="users" class="text-embracon-red w-8 h-8"></i>
+                            <div>
+                                <h4 class="font-bold text-gray-800">Mais de meio milhão de bens entregues</h4>
+                                <p class="text-sm text-gray-500">Centenas de milhares de clientes em todo o Brasil.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-center gap-4 bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                            <i data-lucide="shield-check" class="text-embracon-red w-8 h-8"></i>
+                            <div>
+                                <h4 class="font-bold text-gray-800">Regulado pelo Banco Central</h4>
+                                <p class="text-sm text-gray-500">Sistema amparado pela Lei 11.795 de consórcios.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== SEÇÃO 4: PROVA SOCIAL (Carrossel de Prints) ===== -->
+    <section class="py-20 bg-gray-50 overflow-hidden border-b border-gray-200">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold text-embracon-blue mb-4">
+                Histórias reais de clientes <span class="text-embracon-red">que conseguiram</span>
+            </h2>
+            <p class="text-gray-600 text-lg max-w-2xl mx-auto">
+                Veja as mensagens autênticas de clientes que planejaram, estruturaram e conquistaram a aprovação e a carta de crédito com sucesso.
+            </p>
+        </div>
+
+        <!-- Carrossel Infinito -->
+        <div class="relative w-full">
+            <!-- Gradientes laterais para efeito profissional -->
+            <div class="absolute inset-y-0 left-0 w-16 md:w-40 bg-gradient-to-r from-gray-50 to-transparent z-10 pointer-events-none"></div>
+            <div class="absolute inset-y-0 right-0 w-16 md:w-40 bg-gradient-to-l from-gray-50 to-transparent z-10 pointer-events-none"></div>
+
+            <div class="carousel-track">
+                <!-- GRUPO 1: Prints reais de WhatsApp -->
+                <div class="flex gap-7 pr-7">
+ 		    <img src="https://i.imgur.com/hbJAHoo.jpeg" alt="Conversa Cliente 1" class="print-img">
+                    <img src="https://i.imgur.com/Jv0CkbT.jpeg" alt="Conversa Cliente 2" class="print-img">
+                    <img src="https://i.imgur.com/n4KcJ3S.jpeg" alt="Conversa Cliente 3" class="print-img">
+                    <img src="https://i.imgur.com/Q9nny3v.jpeg" alt="Conversa Cliente 4" class="print-img">
+                    <img src="https://i.imgur.com/hxNXknZ.jpeg" alt="Conversa Cliente 5" class="print-img">
+                    <img src="https://i.imgur.com/adYke3K.jpeg" alt="Conversa Cliente 6" class="print-img">
+  		    <img src="https://i.imgur.com/LJU9QQy.jpeg" alt="Conversa Cliente 7" class="print-img">
+                </div>
+                
+                <!-- GRUPO 2: Clone para loop infinito -->
+                <div class="flex gap-7 pr-7">
+ 		    <img src="https://i.imgur.com/hbJAHoo.jpeg" alt="Conversa Cliente 1" class="print-img">
+                    <img src="https://i.imgur.com/Jv0CkbT.jpeg" alt="Conversa Cliente 2" class="print-img">
+                    <img src="https://i.imgur.com/n4KcJ3S.jpeg" alt="Conversa Cliente 3" class="print-img">
+                    <img src="https://i.imgur.com/Q9nny3v.jpeg" alt="Conversa Cliente 4" class="print-img">
+                    <img src="https://i.imgur.com/hxNXknZ.jpeg" alt="Conversa Cliente 5" class="print-img">
+                    <img src="https://i.imgur.com/adYke3K.jpeg" alt="Conversa Cliente 6" class="print-img">
+  		    <img src="https://i.imgur.com/LJU9QQy.jpeg" alt="Conversa Cliente 7" class="print-img">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== SEÇÃO 5: COMO FUNCIONA ===== -->
+    <section class="py-20 bg-white border-t border-gray-200">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-embracon-blue mb-6">
+                    Como funciona a consultoria
+                </h2>
+                <p class="text-gray-600 text-lg">
+                    Tudo começa com uma conversa real. Sem formulários longos, sem automatização, sem pressão.
+                </p>
+            </div>
+
+            <div class="flex justify-center">
+                <!-- Processo -->
+                <div class="max-w-3xl w-full">
+                    <h3 class="text-2xl font-bold text-embracon-blue mb-8 text-center">
+                        O Método: 5 Passos Até Sua Simulação
+                    </h3>
+
+                    <div class="space-y-6">
+                        <div class="flex gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-embracon-red rounded-full flex items-center justify-center text-white font-bold text-sm">
+                                1
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-800 mb-1">Você entra em contato</h4>
+                                <p class="text-gray-600 text-sm">Clique no botão, mande uma mensagem ou agende uma conversa (sem formulário complexo).</p>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-embracon-red rounded-full flex items-center justify-center text-white font-bold text-sm">
+                                2
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-800 mb-1">Resposta consultiva rápida</h4>
+                                <p class="text-gray-600 text-sm">Você recebe uma resposta genuína. Sou eu mesma, respondendo como consultora especialista.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-embracon-red rounded-full flex items-center justify-center text-white font-bold text-sm">
+                                3
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-800 mb-1">Análise personalizada</h4>
+                                <p class="text-gray-600 text-sm">Você compartilha sua renda, qual veículo deseja, seu prazo. Nada genérico, tudo customizado.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-embracon-red rounded-full flex items-center justify-center text-white font-bold text-sm">
+                                4
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-800 mb-1">Simulação estruturada</h4>
+                                <p class="text-gray-600 text-sm">Números reais, mensalidade exata, prazo estratégico. Tudo mapeado para sua situação.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-embracon-red rounded-full flex items-center justify-center text-white font-bold text-sm">
+                                5
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-800 mb-1">Próximas etapas (se fizer sentido)</h4>
+                                <p class="text-gray-600 text-sm">Se aprovar a proposta, estruturamos tudo. Você tem total controle do processo — online ou presencialmente.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 p-6 bg-embracon-light rounded-xl border border-embracon-blue text-center">
+                        <p class="text-gray-800 font-bold">
+                            Todo esse processo: Menos de 1 hora. Sem compromisso de compra.
+                        </p>
+                    </div>
+
+                    <div class="mt-8">
+                        <button onclick="openWhatsApp(event)" class="w-full flex items-center justify-center gap-3 bg-whatsapp hover:bg-whatsapp-hover text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all">
+                            <i data-lucide="message-circle" class="w-6 h-6"></i>
+                            <span>Iniciar Conversa Agora</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== SEÇÃO 6: CTA FINAL ===== -->
+    <section class="py-24 relative overflow-hidden" style="background: linear-gradient(135deg, #ff4a75 0%, #c5242d 100%);">
+        <div class="absolute top-0 right-0 -mt-20 -mr-20 w-80 h-80 bg-white rounded-full opacity-10 blur-3xl"></div>
+        <div class="absolute bottom-0 left-0 -mb-20 -ml-20 w-80 h-80 bg-white rounded-full opacity-10 blur-3xl"></div>
+
+        <div class="max-w-4xl mx-auto px-4 text-center relative z-10">
+            <h2 class="text-3xl md:text-5xl font-bold text-white mb-6">
+                Pronto para estruturar seu consórcio inteligentemente?
+            </h2>
+            <p class="text-xl text-white/80 mb-10 font-light max-w-2xl mx-auto">
+                Uma conversa real, onde vamos entender sua situação e desenhar exatamente o que faz sentido para sua realidade financeira.
+            </p>
+            
+            <button onclick="openWhatsApp(event)" class="inline-flex items-center justify-center gap-3 bg-whatsapp hover:bg-whatsapp-hover text-white px-10 py-5 rounded-2xl font-bold text-xl shadow-[0_0_30px_rgba(37,211,102,0.3)] hover:shadow-[0_0_40px_rgba(37,211,102,0.5)] transition-all transform hover:scale-105 w-full sm:w-auto">
+                <i data-lucide="message-circle" class="w-7 h-7"></i>
+                <span>Solicitar Consultoria Agora</span>
+            </button>
+            
+            <p class="mt-8 text-sm text-white/70">
+                Consultoria especializada | Sem automatização | Resposta em minutos
+            </p>
+
+            <p class="mt-6 text-sm text-white/70 italic max-w-2xl mx-auto">
+                Não é uma venda. É uma conversa consultiva genuína sobre como estruturar seu consórcio da melhor forma possível.
+            </p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-400 py-8 text-center text-sm border-t border-gray-800">
+        <div class="max-w-6xl mx-auto px-4">
+            <img src="https://i.imgur.com/pEmawN0.png" alt="Embracon Logo" class="h-8 mx-auto mb-6 opacity-50 grayscale">
+            <p>2026 - Consultora Especializada Embracon. Todos os direitos reservados.</p>
+            <p class="mt-2 text-xs">Este site é de uma consultora independente autorizada Embracon, não da página institucional da matriz.</p>
+        </div>
+    </footer>
+
+    <!-- Inicializar Ícones -->
+    <script>
+        lucide.createIcons();
+    </script>
 </body>
 </html>
